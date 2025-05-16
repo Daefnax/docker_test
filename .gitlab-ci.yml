@@ -1,0 +1,35 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+
+services:
+  - name: mysql:8
+    alias: mysql
+
+before_script:
+  - cp .env.example .env
+  - composer install
+  - php artisan key:generate
+  - php artisan migrate --force
+
+build:
+  stage: build
+  image: php:8.3
+  script:
+    - echo "Сборка прошла"
+
+test:
+  stage: test
+  image: php:8.3
+  script:
+    - vendor/bin/phpunit
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - echo "Здесь будет деплой на сервер"
